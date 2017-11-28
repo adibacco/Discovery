@@ -1,0 +1,18 @@
+
+#n#n/* StartDefaultTask function */
+void StartDefaultTask(void const * argument)
+{
+#t/* init code for LWIP */
+#tMX_LWIP_Init();#n
+            
+
+#n
+#t/* USER CODE BEGIN StartDefaultTask */
+#t/* Infinite loop */
+#tfor(;;)
+#t{
+#t#tosDelay(1);
+#t}
+#t/* USER CODE END StartDefaultTask */
+}
+#n
