@@ -52,14 +52,18 @@
 #include "cmsis_os.h"
 
 /* USER CODE BEGIN Includes */
-
+#include "lwip/api.h"
+#include "lwip/sys.h"
 /* USER CODE END Includes */
 
 /* Variables -----------------------------------------------------------------*/
 osThreadId defaultTaskHandle;
 
 /* USER CODE BEGIN Variables */
-
+static struct netconn *conn;
+static struct netbuf *buf;
+static struct ip_addr *addr;
+static unsigned short port;
 /* USER CODE END Variables */
 
 /* Function prototypes -------------------------------------------------------*/
@@ -115,9 +119,42 @@ void StartDefaultTask(void const * argument)
 
   /* USER CODE BEGIN StartDefaultTask */
   /* Infinite loop */
-  for(;;)
+  err_t err, recv_err;
+
+  conn = netconn_new(NETCONN_UDP);
+  if (conn!= NULL)
   {
-    osDelay(1);
+    err = netconn_bind(conn, IP_ADDR_ANY, 7055);
+    if (err == ERR_OK)
+    {
+      while (1)
+      {
+        recv_err = netconn_recv(conn, &buf);
+
+        if (recv_err == ERR_OK)
+        {
+          addr = netbuf_fromaddr(buf);
+          port = netbuf_fromport(buf);
+          netconn_connect(conn, addr, port);
+          buf->addr.addr = 0;
+          netconn_send(conn,buf);
+          netbuf_delete(buf);
+        }
+        else
+        {
+        	printf("recv error\n");
+        }
+      }
+    }
+    else
+    {
+      netconn_delete(conn);
+      printf("can not bind netconn");
+    }
+  }
+  else
+  {
+    printf("can create new UDP netconn");
   }
   /* USER CODE END StartDefaultTask */
 }
