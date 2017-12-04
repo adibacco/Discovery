@@ -177,7 +177,7 @@ void StartUdpTask(void const * argument) {
 	}
 }
 
-/* StartUdpTask function */
+/* StartTcpTask function */
 void StartTcpTask(void const * argument) {
 	struct netconn *newconn;
 
